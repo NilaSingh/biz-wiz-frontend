@@ -80,14 +80,6 @@ class ViewButton extends React.Component {
 }
 
 
-//category
-function categoryFilter (type){
-    axios.get('http://biz-wiz.herokuapp.com/business/category/'+type)
-    .then(res => {
-      const businesses = res.data;
-      console.log(businesses);
-    })
-  }
 //location and category
 function locationCategoryFilter(type, location){
     //clear
@@ -97,20 +89,6 @@ function locationCategoryFilter(type, location){
       console.log(businesses)
     })
   }
-  
-//display all businesses
-function displayAll(){
-  let businesslist={}
-  axios.get(`http://biz-wiz.herokuapp.com/business/all`)
-  .then(res =>{
-    const businesses = res.data;
-    console.log(businesses)
-    return(
-      <div id='business'>hi
-      </div>
-    );
-  })
-}
 
 
 
@@ -128,31 +106,82 @@ function SearchBusiness() {
 
     let businessLocation=JSON.stringify(business.location)
     businessLocation=businessLocation.replace(/['"]+/g, '')
-
-    if(businessLocation&&businessType){
-      console.log(locationCategoryFilter(businessType,businessLocation)) // fix so that location only grabs state
-    }else{
-      if(!businessLocation && businessType){
-        console.log(categoryFilter(businessType))
-      }else{
+//filter by location and type
+    if(businessLocation&&businessType){                                             
+      axios.get(`http://biz-wiz.herokuapp.com/business/category/`+businessType)
+      .then(res =>{
+        let sortByState=[]
+        const businesses = res.data;
+        for(let i=0; i<businesses.length; i++){
+          if(businesses[i].state==businessLocation){
+            sortByState.push(businesses[i].business_type)
+          }
+        }
+        console.log(sortByState)
+        let businessList=[]
+        if(sortByState.length==0){
+          ReactDOM.render(<div>Match Could Not Be Found</div>,document.getElementById('list'))
+        }
+        else{
+          let businessList=sortByState.map((business)=><Grid><Card>{business}</Card></Grid>)
+          ReactDOM.render(<div>{businessList}</div>,document.getElementById('list'))}
+      })}
+//filter by type alone
+    else{
+      if(!businessLocation && businessType){                                    
+        axios.get('http://biz-wiz.herokuapp.com/business/category/'+businessType)
+        .then(res =>{
+          const businesses = res.data;
+          const businessList=businesses.map((business)=><Grid><Card style={{backgroundColor:'#3168b0'}}>{business.business_type}</Card></Grid>)
+          console.log(businesses.length)
+          if(businesses.length>0){
+            ReactDOM.render(
+            <div>{businessList}</div>,
+            document.getElementById('list')
+          )}
+          else{
+            ReactDOM.render(<div>Match Could Not Be Found</div>,document.getElementById('list'))
+          }
+    })
+  }
+  //output if no filter is selected
+    else{
         if(!businessLocation&&!businessType){
             axios.get(`http://biz-wiz.herokuapp.com/business/all`)
               .then(res =>{
                 const businesses = res.data;
                 console.log(businesses)
-                const businessList=businesses.map((business)=><Grid><Card>{business.business_type}</Card></Grid>)
+                const businessList=businesses.map((business)=><Grid><Card style={{backgroundColor:'#3168b0'}}>{business.business_type}</Card></Grid>)
                 ReactDOM.render(
                   <div>{businessList}</div>,
                   document.getElementById('list')
                 )
           })
         }
+//filter by state
+        else{
+          axios.get(`http://biz-wiz.herokuapp.com/business/all`)
+          .then(res =>{
+            let sortByState=[]
+            const businesses = res.data;
+            for(let i=0; i<businesses.length; i++){
+              if(businesses[i].state==businessLocation){
+                sortByState.push(businesses[i].business_type)
+              }
+            }
+            console.log(sortByState)
+            if(sortByState.length==0){
+              ReactDOM.render(<div>Match Could Not Be Found</div>,document.getElementById('list'))
+            }
+            else{
+              let businessList=sortByState.map((business)=><Grid><Card>{business}</Card></Grid>)
+              ReactDOM.render(<div>{businessList}</div>,document.getElementById('list'))}
+          })}
       }
     }
   };
 
     return (
-      
       <body>
         {/* <div><SearchForm /></div> */}
         <formdiv>
@@ -192,7 +221,7 @@ function SearchBusiness() {
         </div>
         <div>
           <filterby>Location</filterby><br/>
-        <input type="radio" value="New York" onClick={setBusinessState} name="location" /> New York<br/>
+        <input type="radio" value="" onClick={setBusinessState} name="location" /> Test<br/>
         <input type="radio" value="Technology" onClick={setBusinessState} name="location" /> New Jersey<br/>
         <input type="radio" value="Conneticut" onClick={setBusinessState} name="location" /> Conneticut<br/>
         <input type="radio" value="Other" onClick={setBusinessState} name="location" /> Other<br/>
