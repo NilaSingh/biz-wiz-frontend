@@ -68,3 +68,7 @@ filterby{
 #business-info{
     width: 50%;
 }
+p{
+    background-color: #1a2333;
+    max-width: 200vw;
+}

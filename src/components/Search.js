@@ -1,12 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Search.css'
-import {BrowserRouter as Link} from "react-router-dom";
-import MapContainer from "./Map"
-import { Button, Fade, Grow, makeStyles } from "@material-ui/core";
+// import MapContainer from "./Map"
+import { useFormFields } from "../lib/customHooks";
+import {
+  makeStyles,
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Card,
+  TextareaAutosize,
+} from "@material-ui/core";
+import { Form } from "react-bootstrap";
+import ReactDOM from 'react-dom'
 
-
+const gridStyles = makeStyles({
+  card: {
+    maxWidth: 345,
+    boxShadow: "0 5px 8px 0 rgba(0, 0, 0, 0.3)",
+    backgroundColor: "#fafafa",
+  },
+  media: {
+    height: 300,
+  },
+});
 const useStyles = makeStyles((theme) => ({
   filterbutton: {
     "&:hover": {
@@ -26,227 +45,134 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-class BusinessList extends React.Component {
-  
-  constructor(props){
+
+class ViewButton extends React.Component {
+  constructor(props) {
     super(props);
-    this.state = {
-      businesses: []
-    }
-  }
-  
-  // setBusinesses(businesNames){
-  //   this.setState({businesNames});
-  // }
-
-  //done in SearchBusinesses Function
-  //functions for fetching and filtering business data during search
-  // nameFilter(name){
-  //   console.log(name)
-  //   let businesses = ''
-  //   this.setState({businesses})
-  //   axios.get(`http://biz-wiz.herokuapp.com/business/find/?search=:${name}`)
-  //   .then(res => {
-  //     this.props.list = res.data;
-  //     this.setState(this.props.list);
-  //   })
-  // }
-
-  categoryFilter (type){
-    let businesses = ''
-    this.setState({businesses})
-    axios.get(`http://biz-wiz.herokuapp.com/business/category/${type}`)
-    .then(res => {
-      businesses = res.data;
-      this.setState({ businesses });
-    })
+    this.state = {isToggleOn: true};
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  locationCategoryFilter(type, location){
-    let businesses = ''
-    this.setState({businesses})
-    axios.get(`http://biz-wiz.herokuapp.com/business/category/${type}/distance/${location}`)
-    .then(res => {
-      businesses = res.data;
-      this.setState({ businesses });
-    })
+  handleClick() {
+    this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }));
   }
-
-  //rewritten by Davi outside this class, but not showing up on screen
-  componentDidMount() {
-    axios.get(`http://biz-wiz.herokuapp.com/business/all`)
-      .then(res => {
-        const businesses = res.data;
-        this.setState({ businesses });
-      })
-  }
-
   render() {
-    return (
-      <div>
-        <div className='list'>
-            { this.state.businesses.map((business, index) =><div className='business' key={index}>
-              <div id="business-info">{business.business_name}</div>
-              <div id="business-info">{business.business_type}</div>
-            </div>)}
-        </div>
+    if(this.state){
+      return (
         <div>
-              <MapContainer />
+          <Button variant="primary" onClick={this.handleClick}>
+            {this.state.isToggleOn ? 'List' : 'Map'}
+          </Button>
         </div>
-      </div>
-    )
+      );
+    }else{
+      return (
+        <div>
+          <button onClick={this.handleClick}>
+            {this.state.isToggleOn ? 'List' : 'Map'}
+          </button>
+        </div>
+      );
+    }
   }
 }
 
-// class ViewButton extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {isToggleOn: true};
-//     this.handleClick = this.handleClick.bind(this);
-//   }
 
-//   handleClick() {
-//     this.setState(prevState => ({
-//       isToggleOn: !prevState.isToggleOn
-//     }));
-//   }
-//   render() {
-//     if(this.state){
-//       return (
-//         <div>
-//           <Button variant="primary" onClick={this.handleClick}>
-//             {this.state.isToggleOn ? 'List' : 'Map'}
-//           </Button>
-//         </div>
-//       );
-//     }else{
-//       return (
-//         <div>
-//           <button onClick={this.handleClick}>
-//             {this.state.isToggleOn ? 'List' : 'Map'}
-//           </button>
-//         </div>
-//       );
-//     }
-//   }
-// }
+//category
+function categoryFilter (type){
+    axios.get('http://biz-wiz.herokuapp.com/business/category/'+type)
+    .then(res => {
+      const businesses = res.data;
+      console.log(businesses);
+    })
+  }
+//location and category
+function locationCategoryFilter(type, location){
+    //clear
+    axios.get(`http://biz-wiz.herokuapp.com/business/category/${type}/distance/${location}`)
+    .then(res => {
+      const businesses = res.data;
+      console.log(businesses)
+    })
+  }
+  
+//display all businesses
+function displayAll(){
+  let businesslist={}
+  axios.get(`http://biz-wiz.herokuapp.com/business/all`)
+  .then(res =>{
+    const businesses = res.data;
+    console.log(businesses)
+    return(
+      <div id='business'>hi
+      </div>
+    );
+  })
+}
 
-// class SearchForm extends React.Component{
-//   constructor(props){
-//     super(props);
-//     this.state = {value: ''};
-//     this.handleChange = this.handleChange.bind(this);
-//     this.handleSubmit = this.handleSubmit.bind(this)
-//   }
-//   handleChange(event){
-//     this.setState({value: event.target.value})
-//   }
-//   handleSubmit(event){
-//     //console.log(this.state.value)
-//     event.preventDefault()
-//   }
-//   render(){
-//     return(
-//       <div>
-//       <form onSubmit={this.handleSubmit}>  
-//         <label>
-//         <input type="text" value={this.state.value} onChange={this.handleChange} />
-//         </label>
-//         <button className='search' type="submit" value="Submit">Search for Business</button>
-//       </form>
-//       </div>
-//     )
-//   }
-// }
+
 
 function SearchBusiness() {
-  //let MyBusinessList= new BusinessList();
+  const gridclass=gridStyles()
   const classes = useStyles();
-  const [checked, setChecked] = useState(false);
-  useEffect(() => {
-      setChecked(true);
-  }, []);
+  const[business, setBusinessState]=useFormFields({
+    business_type:'',
+    location:''
+  });
+  const handleSubmit=event=>{
+    event.preventDefault()
+    let businessType=JSON.stringify(business.business_type)
+    businessType=businessType.replace(/['"]+/g, '')
 
-  const [input, setInput] = useState("");
-  // useEffect(() => {
-  //   console.log(businesses)
-  // }, businesses)
+    let businessLocation=JSON.stringify(business.location)
+    businessLocation=businessLocation.replace(/['"]+/g, '')
 
-  const [businesses, setBusinesses] =useState([]);
-
-  const nameFilter = (event) =>{
-    event.preventDefault();
-    console.log(event.target.input.value)
-    //let businesses = ''
-    //BusinessList.setState({businesses})
-    try{
-      axios.get(`http://biz-wiz.herokuapp.com/business/find/name/${event.target.input.value}`) 
-      .then(res => {
-        //console.log(res.data)
-        setBusinesses(res.data);
-        console.log(businesses);
-        //attempts to see filtered data to screen
-          //BusinessList.setBusinesses({ businesses });
-          //BusinessList.setState({businesses});
-          //MyBusinessList.setState({ businesses });
-          //BusinessList.call(this, setBusinesses({businesses}))
-      })
-    }catch(err){
-      console.log(err.message)
+    if(businessLocation&&businessType){
+      console.log(locationCategoryFilter(businessType,businessLocation)) // fix so that location only grabs state
+    }else{
+      if(!businessLocation && businessType){
+        console.log(categoryFilter(businessType))
+      }else{
+        if(!businessLocation&&!businessType){
+            axios.get(`http://biz-wiz.herokuapp.com/business/all`)
+              .then(res =>{
+                const businesses = res.data;
+                console.log(businesses)
+                const businessList=businesses.map((business)=><Grid><Card>{business.business_type}</Card></Grid>)
+                ReactDOM.render(
+                  <div>{businessList}</div>,
+                  document.getElementById('list')
+                )
+          })
+        }
+      }
     }
-  }
+  };
 
-  const handleChange = (event) =>{
-    console.log(event.target.value);
-    setInput(event.target.value);
-    console.log(event.target.value);
-  }
     return (
       
       <body>
         {/* <div><SearchForm /></div> */}
-
-        {/* have the search bar appear, main purpose to search by name -I.T.*/}
-        <Grow in={checked} {...(checked ? { timeout: 3000 } : {})}>
-          {/* Form now prints to console, now just needs to change what is displayed to the screen */}
-          <form onSubmit={nameFilter}> 
-            <input className={classes.searchBar}
-              type="text"
-              id='searchField'
-              value={input}
-              name="input"
-              placeholder="Business Name Search"
-              onChange={handleChange}
-            />
+        <formdiv>
+        {/* have the search bar appear -I.T.*/}
+          <form action="">
+            <Form.Control className={classes.searchBar} type="text" id='searchField'/>
             <Button
+              fullWidth="10px"
               type="submit"
               className={classes.submitButton}
               variant="contained"
               size="small"
-              //onClick = {console.log('Search Clicked')}
-
-              // onClick={nameFilter}
-
-              // onClick={(event)=>{
-              //   event.preventDefault();
-              //   let value = "";
-              //   value = document.getElementById('searchField').value
-              //   console.log(value);
-              //   nameFilter(value);
-              // }}
-
-              //onClick={BusinessList.nameFilter(document.getElementById('searchField').value)}
-              // onclick = {() => {
-              //   console.log(businesses);
-              //   //setBusinesses(businesses);
-              //   console.log(businesses);
-              // }}
+              placeholder='Search by name'
+              onClick = {console.log('Search Clicked')}
+              // onClick={BusinessList.nameFilter(document.getElementById('searchField').value)}
             >
               Search
             </Button>
           </form>
-        </Grow>
-
+        </formdiv>
         <div className='page-container'>
         <div className='filter-container'>
         <div>
@@ -255,38 +181,33 @@ function SearchBusiness() {
         <div>
           <filterby>Category</filterby><br/>
           {/* call functions when check boxes are clicked => onChange={BusinessList.categoryFilter("Education")} */}
-          <input type='checkbox' ></input>Local Markets<br/>
-          <input type='checkbox' ></input>Technology<br/>
-          <input type='checkbox' ></input>Beauty<br/>
-          <input type='checkbox' ></input>Education<br/>
-          <input type='checkbox' ></input>Crafting<br/>
+        <div>
+        <input type="radio" value='Local Market' onClick={setBusinessState} name='business_type' /> Local Markets<br/>
+        <input type="radio" value='Technology' onClick={setBusinessState} name="business_type" /> Technology<br/>
+        <input type="radio" value='Crafting' onClick={setBusinessState} name="business_type" /> Crafting<br/>
+        <input type="radio" value='Education' onClick={setBusinessState} name="business_type" /> Education<br/>
+        <input type="radio" value='Wholesale' onClick={setBusinessState} name="business_type" /> Wholesale<br/>
+        <input type="radio" value='Hardware' onClick={setBusinessState} name="business_type" /> Hardware<br/>
+      </div>
         </div>
         <div>
-
           <filterby>Location</filterby><br/>
-          <input type='checkbox' name='New York'></input>New York<br/>
-          <input type='checkbox' name='New Jersey'></input>New Jersey<br/>
-          <input type='checkbox' name='Conneticut'></input>Conneticut<br/>
-          <input type='checkbox'></input>Other<br/>
+        <input type="radio" value="New York" onClick={setBusinessState} name="location" /> New York<br/>
+        <input type="radio" value="Technology" onClick={setBusinessState} name="location" /> New Jersey<br/>
+        <input type="radio" value="Conneticut" onClick={setBusinessState} name="location" /> Conneticut<br/>
+        <input type="radio" value="Other" onClick={setBusinessState} name="location" /> Other<br/>
         </div>
-        {/* <div><ViewButton /></div> */}
-        <br/>
+        <div><ViewButton /></div><br/>
         <Button
         type='submit'
         variant='contained'
         size='small'
-        className={classes.filterbutton}
+        onClick={handleSubmit}
         >Filter</Button>
         </div>
-        <div className='list-container'>
-          {/* <GetAllBusinesses />
-          <RenderList /> */}
-          <BusinessList />
-          {/* <MyBusinessList /> */}
-        </div>
+          <list id='list' className='list-container'/>
         </div>
       </body>
     );
   }
-
 export default SearchBusiness;
