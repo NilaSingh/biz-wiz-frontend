@@ -1,16 +1,8 @@
 form{
     text-align: center;
-    padding-top:10px
+    padding-top:5vw;
 }
-.search{
-    background-color:#12417b;
-    color: white;
-}
-.filterby{
-    padding-top: 10px;
-    color: #1a2333;
-    display: inline;
-}
+
 filter{
     font-weight: bold;
     font-size: 22px;
@@ -19,24 +11,16 @@ filter{
 filterby{
     text-decoration: underline;
     font-weight:normal;
-    font-size: large;
+    font-size: medium;
 }
-.filter-button{
-    background-color: #1a2333;
-    color: white;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 15px;
-}
+
 .filter-container{
     display: inline;
     padding-top: 10vw;
     width: 20vw;
     padding-left: 3vw;
 }
-.list{
-    width:100%;
-}
+
 .list-container{
     display: inline;
     padding-top: 10vw;
@@ -46,29 +30,9 @@ filterby{
     display: flex;
     width: 100%;
 }
-.business{
-    color: white;
-    background-color:#12417b;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 20px;
-    border-radius: 1vw;
-
+h1{
+    color: #3168b0;
 }
-.list:hover .business:hover{
-    background-color:#0f3666;
-    color:white;
-}
-.profile-button{
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 20px;
-}
-
-#business-info{
-    width: 50%;
-}
-p{
-    background-color: #1a2333;
-    max-width: 200vw;
+div{
+    padding: 1vw;
 }

@@ -111,8 +111,11 @@ export default function SignUp () {
               <option value="Crafts">Crafts</option>
               <option value="Beauty">Beauty</option>
               <option value="Educational">Educational</option>
+              <option value="Wholesale">Wholesale</option>
+              <option value="Hardware">Hardware</option>
               <option value="Local Market">Local Market</option>
               <option value="Decor">Decor</option>
+              <option value="Educational">Other</option>
             </select>
         </div>
   
